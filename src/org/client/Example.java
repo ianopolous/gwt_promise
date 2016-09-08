@@ -4,7 +4,8 @@ import java.util.concurrent.*;
 
 public class Example {
 
-    public static native CompletableFuture<byte[]> getUrlBytes(String url)/*console.log("getHTTP");
+    public static native CompletableFuture<byte[]> getUrlBytes(String url)/*-{
+    console.log("getHTTP");
     return java.util.concurrent.CompletableFuture.fromPromise(new Promise(function(resolve, reject) {
 	var req = new XMLHttpRequest();
 	req.open('GET', url);
@@ -26,5 +27,6 @@ public class Example {
 	};
 
 	req.send();
-    }));*/;
+    }), false);
+    }-*/;
 }
