@@ -13,7 +13,7 @@
   <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
-
+  <super-source path="gwt/emu" />
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
