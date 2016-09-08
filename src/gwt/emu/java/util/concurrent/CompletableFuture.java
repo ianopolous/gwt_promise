@@ -15,6 +15,8 @@
  */
 package java.util.concurrent;
 
+import jsinterop.annotations.*;
+
 import static javaemul.internal.InternalPreconditions.checkNotNull;
 
 import java.util.concurrent.impl.DeferredExecutor;
@@ -141,6 +143,16 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   private CompletableFuture(T value) {
     promise = Promises.IMPL.completed(value);
     done = true;
+  }
+
+  private CompletableFuture(Promise<T> prom, boolean done) {
+    this.promise = prom;
+    this.done = done;
+  }
+
+  @JsMethod
+  public static <U> CompletableFuture<U> fromPromise(Promise<U> prom) {
+    return new CompletableFuture<U>(prom, false);
   }
 
   @Override

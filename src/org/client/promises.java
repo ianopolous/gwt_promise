@@ -1,5 +1,6 @@
 package org.client;
 
+import com.google.gwt.user.client.*;
 import org.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -16,6 +17,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.concurrent.*;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -90,7 +93,7 @@ public class promises implements EntryPoint {
        * Fired when the user clicks on the sendButton.
        */
       public void onClick(ClickEvent event) {
-        sendNameToServer();
+        startPromisesExample();
       }
 
       /**
@@ -100,6 +103,11 @@ public class promises implements EntryPoint {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
           sendNameToServer();
         }
+      }
+
+      private void startPromisesExample() {
+        String url = nameField.getText();
+        Example.getUrlBytes(url).thenAccept(res -> Window.alert(res.toString()));
       }
 
       /**
