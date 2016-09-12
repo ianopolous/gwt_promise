@@ -6,7 +6,8 @@ public class Example {
 
     public static native CompletableFuture<byte[]> getUrlBytes(String url)/*-{
     console.log("getHTTP");
-    return java.util.concurrent.CompletableFuture.fromPromise(new Promise(function(resolve, reject) {
+    var future = new java.util.concurrent.CompletableFuture();
+    var prom = new Promise(function(resolve, reject) {
 	var req = new XMLHttpRequest();
 	req.open('GET', url);
 	req.responseType = 'arraybuffer';
@@ -27,6 +28,13 @@ public class Example {
 	};
 
 	req.send();
-    }), false);
+    });
+    prom.then(function(result, err) {
+        if (err != null)
+            future.completeExceptionally(err);
+        else
+            future.complete(result);
+    });
+    return future;
     }-*/;
 }
