@@ -145,11 +145,6 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     done = true;
   }
 
-  @JsMethod
-  public static <T> CompletableFuture<T> incomplete() {
-    return new CompletableFuture<>();
-  }
-
   @Override
   public <U> CompletionStage<U> thenApply(Function<? super T, ? extends U> fn) {
     return thenApplyAsync0(fn, null);

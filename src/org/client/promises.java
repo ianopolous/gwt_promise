@@ -1,6 +1,7 @@
 package org.client;
 
 import com.google.gwt.user.client.*;
+import jsinterop.annotations.*;
 import org.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -36,6 +37,11 @@ public class promises implements EntryPoint {
    * Create a remote service proxy to talk to the server-side Greeting service.
    */
   private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+
+  @JsMethod
+  public static <T> CompletableFuture<T> incomplete() {
+    return new CompletableFuture<>();
+  }
 
   /**
    * This is the entry point method.

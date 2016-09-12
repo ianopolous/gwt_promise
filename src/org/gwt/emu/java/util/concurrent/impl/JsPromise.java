@@ -85,7 +85,7 @@ final class JsPromise extends JavaScriptObject {
   }-*/;
 
   public static native JsPromise create(Consumer<Resolver> resolverConsumer) /*-{
-    return new Promise.resolve(function (resolve, reject) {
+    return Promise.resolve(function (resolve, reject) {
       var resolver = @Resolver::new(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;)(resolve, reject);
       resolverConsumer.@Consumer::accept(*)(resolver);
     });
