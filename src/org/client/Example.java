@@ -1,6 +1,6 @@
 package org.client;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 
 public class Example {
 

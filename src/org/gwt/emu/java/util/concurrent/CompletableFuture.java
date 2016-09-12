@@ -604,6 +604,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     return 0;
   }
 
+  @JsMethod
   public boolean complete(T value) {
     if (!isDone()) {
       obtrudeValue(value);
@@ -612,6 +613,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     return false;
   }
 
+  @JsMethod
   public boolean completeExceptionally(Throwable e) {
     if (!isDone()) {
       obtrudeException(e);
