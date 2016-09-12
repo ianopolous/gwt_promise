@@ -136,7 +136,6 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   private T value;
   private Throwable reason;
 
-  @JsConstructor
   public CompletableFuture() {
     promise = Promises.IMPL.incomplete();
   }
@@ -144,6 +143,11 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   private CompletableFuture(T value) {
     promise = Promises.IMPL.completed(value);
     done = true;
+  }
+
+  @JsMethod
+  public static <T> CompletableFuture<T> incomplete() {
+    return new CompletableFuture<>();
   }
 
   @Override
