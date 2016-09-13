@@ -8,6 +8,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.shared.util.*;
+
 /** Emulation of CompletableFuture using native Promises
  *
  */
@@ -17,7 +19,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     return new CompletableFuture<T>(value);
   }
 
-  private final List<CompletableFuture<? extends Object>> thenables = new ArrayList<>();
+  private final List<Pair<Function<? super T, ?>, CompletableFuture>> thenables = new ArrayList<>();
   private T value;
   private Throwable reason;
 
@@ -28,8 +30,12 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   }
 
   @Override
+  @JsMethod
   public <U> CompletableFuture<U> thenApply(Function<? super T, ? extends U> fn) {
-    throw new IllegalStateException("Unimplemented 1!");
+    CompletableFuture<U> fut = new CompletableFuture<>();
+    Pair<Function<? super T, ?>, CompletableFuture> pair = new Pair(fn, fut);
+    thenables.add(pair);
+    return fut;
   }
 
   @Override
@@ -49,11 +55,18 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
 
   @JsMethod
   public boolean complete(T value) {
-    throw new IllegalStateException("Unimplemented 4!");
+    this.value = value;
+    for (Pair<Function<? super T, ?>, CompletableFuture> pair : thenables) {
+      Function<? super T, ?> left = pair.left;
+      Object mapped = left.apply(value);
+      pair.right.complete(mapped);
+    }
+    thenables.clear();
+    return true;
   }
 
   @JsMethod
-  public boolean completeExceptionally(Throwable e) {
+  public boolean completeExceptionally(Throwable err) {
     throw new IllegalStateException("Unimplemented 5!");
   }
 
