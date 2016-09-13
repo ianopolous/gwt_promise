@@ -1,31 +1,20 @@
-/*
- * Copyright 2016 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package java.util.concurrent.impl;
 
-import java.util.function.BiConsumer;
+import jsinterop.annotations.*;
 
-/**
- *
- */
-public interface Promise<V> {
+import java.util.*;
+import java.util.function.*;
 
-  void resolve(V value);
+@JsType(namespace = JsPackage.GLOBAL, isNative = true)
+public class Promise<V> {
 
-  void reject(Throwable reason);
+  native static <V> Promise<V> resolve(V value);
+  native static <V> Promise<V> reject(Throwable err);
+  native static <V> Promise<List<V>> all(List<Promise<V>> promises);
+  native static <V> Promise<V> race(List<Promise<V>> promises);
 
-  void then(BiConsumer<? super V, ? super Throwable> callback);
+  native <T> Promise<T> then(Function<? super V, ? extends T> onFulfilled, Function<? super Throwable, ? extends T> onError);
 
+  @JsMethod(name = "catch")
+  native <T> Promise<T> _catch(Function<? super Throwable, ? extends T> onError);
 }
