@@ -1,5 +1,6 @@
 package org.client;
 
+import com.google.gwt.logging.client.*;
 import com.google.gwt.user.client.*;
 import jsinterop.annotations.*;
 import org.shared.FieldVerifier;
@@ -49,7 +50,7 @@ public class promises implements EntryPoint {
   public void onModuleLoad() {
     final Button sendButton = new Button("Send");
     final TextBox nameField = new TextBox();
-    nameField.setText("GWT User");
+    nameField.setText("http://localhost:3000/promises.html");
     final Label errorLabel = new Label();
 
     // We can add style names to widgets
@@ -113,7 +114,19 @@ public class promises implements EntryPoint {
 
       private void startPromisesExample() {
         String url = nameField.getText();
-        Example.getUrlBytes(url).thenAccept(res -> Window.alert(res.toString()));
+        Example.getUrlBytes(url).thenAccept(res -> {
+                  dialogBox.setText("Remote Procedure Call");
+                  serverResponseLabel.removeStyleName("serverResponseLabelError");
+                  serverResponseLabel.setHTML(new String(res));
+                  dialogBox.center();
+                }
+          ).exceptionally(err -> {
+          dialogBox.setText("Remote Procedure Call - Failure");
+          serverResponseLabel.addStyleName("serverResponseLabelError");
+          serverResponseLabel.setHTML(SERVER_ERROR);
+          dialogBox.center();
+          return null;
+        });
       }
 
       /**

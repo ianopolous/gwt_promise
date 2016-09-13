@@ -6,7 +6,7 @@ public class Example {
 
     public static native CompletableFuture<byte[]> getUrlBytes(String url)/*-{
     console.log("getHTTP");
-    var future = org.client.promises.incomplete();
+    var future = org_client_promises_incomplete__Ljava_util_concurrent_CompletableFuture_2();
     console.log("getHTTP made future");
     var prom = new Promise(function(resolve, reject) {
 	var req = new XMLHttpRequest();
@@ -14,15 +14,17 @@ public class Example {
 	req.responseType = 'arraybuffer';
 
 	req.onload = function() {
-	    console.log("getHTTP returned");
+	        console.log("getHTTP returned");
             // This is called even on 404 etc
             // so check the status
             if (req.status == 200) {
-		resolve(new Uint8Array(req.response));
+            console.log("getHTTP resolving");
+		    resolve(new Uint8Array(req.response));
             }
             else {
-		reject(Error(req.statusText));
-            }
+            console.log("getHTTP rejecting");
+		    reject(Error(req.statusText));
+        }
 	};
 
 	req.onerror = function() {

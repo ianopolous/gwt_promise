@@ -17,6 +17,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     return new CompletableFuture<T>(value);
   }
 
+  private final List<Consumer<? super T>> consumers = new ArrayList<>();
+  private final List<CompletableFuture<Void>> consumeFutures = new ArrayList<>();
   private final List<Function<? super T, ? extends Object>> applies = new ArrayList<>();
   private final List<CompletableFuture> applyFutures = new ArrayList<>();
   private T value;
@@ -39,7 +41,10 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
 
   @Override
   public CompletableFuture<Void> thenAccept(Consumer<? super T> action) {
-    throw new IllegalStateException("Unimplemented 2!");
+    CompletableFuture<Void> fut = new CompletableFuture<>();
+    consumeFutures.add(fut);
+    consumers.add(action);
+    return fut;
   }
 
   @Override
@@ -64,6 +69,18 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         future.completeExceptionally(t);
       }
     }
+    for (int i=0; i < consumers.size(); i++) {
+      Consumer<? super T> function = consumers.get(i);
+      CompletableFuture<Void> future = consumeFutures.get(i);
+      try {
+        function.accept(value);
+        future.complete(null);
+      } catch (Throwable t) {
+        future.completeExceptionally(t);
+      }
+    }
+    consumers.clear();
+    consumeFutures.clear();
     applies.clear();
     applyFutures.clear();
     return true;
@@ -71,7 +88,28 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
 
   @JsMethod
   public boolean completeExceptionally(Throwable err) {
-    throw new IllegalStateException("Unimplemented 5!");
+    this.reason = err;
+    for (int i=0; i < applies.size(); i++) {
+      CompletableFuture future = applyFutures.get(i);
+      try {
+        future.completeExceptionally(err);
+      } catch (Throwable t) {
+        future.completeExceptionally(t);
+      }
+    }
+    for (int i=0; i < consumers.size(); i++) {
+      CompletableFuture<Void> future = consumeFutures.get(i);
+      try {
+        future.completeExceptionally(err);
+      } catch (Throwable t) {
+        future.completeExceptionally(t);
+      }
+    }
+    consumers.clear();
+    consumeFutures.clear();
+    applies.clear();
+    applyFutures.clear();
+    return true;
   }
 
   @Override
