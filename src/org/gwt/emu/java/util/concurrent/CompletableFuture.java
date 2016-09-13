@@ -19,7 +19,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     return new CompletableFuture<T>(value);
   }
 
-  private final List<Pair<Function<? super T, ?>, CompletableFuture>> thenables = new ArrayList<>();
+  private final List<Function<? super T, ? extends Object>> applies = new ArrayList<>();
+  private final List<CompletableFuture> applyFutures = new ArrayList<>();
   private T value;
   private Throwable reason;
 
@@ -33,8 +34,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   @JsMethod
   public <U> CompletableFuture<U> thenApply(Function<? super T, ? extends U> fn) {
     CompletableFuture<U> fut = new CompletableFuture<>();
-    Pair<Function<? super T, ?>, CompletableFuture> pair = new Pair(fn, fut);
-    thenables.add(pair);
+    applyFutures.add(fut);
+    applies.add(fn);
     return fut;
   }
 
@@ -56,12 +57,17 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   @JsMethod
   public boolean complete(T value) {
     this.value = value;
-    for (Pair<Function<? super T, ?>, CompletableFuture> pair : thenables) {
-      Function<? super T, ?> left = pair.left;
-      Object mapped = left.apply(value);
-      pair.right.complete(mapped);
+    for (int i=0; i < applies.size(); i++) {
+      Function<? super T, ? extends Object> function = applies.get(i);
+      CompletableFuture future = applyFutures.get(i);
+      try {
+        future.complete(function.apply(value));
+      } catch (Throwable t) {
+        future.completeExceptionally(t);
+      }
     }
-    thenables.clear();
+    applies.clear();
+    applyFutures.clear();
     return true;
   }
 
