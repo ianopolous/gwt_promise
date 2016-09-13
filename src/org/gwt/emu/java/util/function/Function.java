@@ -27,20 +27,23 @@ import static javaemul.internal.InternalPreconditions.checkCriticalNotNull;
  * @param <R> type of the return value
  */
 @FunctionalInterface
-@JsType
+@JsFunction
 public interface Function<T, R> {
 
+    @JsOverlay
     static <T> Function<T, T> identity() {
         return t -> t;
     }
 
     R apply(T t);
 
+    @JsOverlay
     default <V> Function<T, V> andThen(Function<? super R, ? extends V> after) {
         checkCriticalNotNull(after);
         return t -> after.apply(apply(t));
     }
 
+    @JsOverlay
     default <V> Function<V, R> compose(Function<? super V, ? extends T> before) {
         checkCriticalNotNull(before);
         return t -> apply(before.apply(t));
