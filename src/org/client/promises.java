@@ -1,7 +1,6 @@
 package org.client;
 
-import com.google.gwt.logging.client.*;
-import com.google.gwt.user.client.*;
+import com.google.gwt.typedarrays.shared.*;
 import jsinterop.annotations.*;
 import org.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
@@ -48,6 +47,8 @@ public class promises implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
+    System.setOut(new ConsolePrintStream());
+    System.setErr(new ConsolePrintStream());
     final Button sendButton = new Button("Send");
     final TextBox nameField = new TextBox();
     nameField.setText("http://localhost:3000/promises.html");
@@ -112,21 +113,33 @@ public class promises implements EntryPoint {
         }
       }
 
+      // only uses CF to test the thenCompose method
+      private CompletableFuture<String> convertUint8ArrayToByteArray(Uint8Array raw) {
+        CompletableFuture<String> res = new CompletableFuture<>();
+        byte[] bytes = new byte[raw.length()];
+        for (int i=0; i < bytes.length; i++)
+          bytes[i] = (byte)raw.get(i);
+        res.complete(new String(bytes));
+        return res;
+      }
+
       private void startPromisesExample() {
         String url = nameField.getText();
-        Example.getUrlBytes(url).thenAccept(res -> {
+        Example.getUrlBytes(url)
+                .thenCompose(this::convertUint8ArrayToByteArray)
+                .thenAccept(text -> {
                   dialogBox.setText("Remote Procedure Call");
                   serverResponseLabel.removeStyleName("serverResponseLabelError");
-                  serverResponseLabel.setHTML(new String(res));
+                  serverResponseLabel.setHTML(text);
                   dialogBox.center();
-                }
-          ).exceptionally(err -> {
-          dialogBox.setText("Remote Procedure Call - Failure");
-          serverResponseLabel.addStyleName("serverResponseLabelError");
-          serverResponseLabel.setHTML(SERVER_ERROR);
-          dialogBox.center();
-          return null;
-        });
+                })
+                .exceptionally(err -> {
+                  dialogBox.setText("Remote Procedure Call - Failure");
+                  serverResponseLabel.addStyleName("serverResponseLabelError");
+                  serverResponseLabel.setHTML(SERVER_ERROR);
+                  dialogBox.center();
+                  return null;
+                });
       }
 
       /**

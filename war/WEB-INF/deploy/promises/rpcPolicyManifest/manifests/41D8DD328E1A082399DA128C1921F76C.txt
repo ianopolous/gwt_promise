@@ -1,2 +1,0 @@
-serviceClass: org.client.GreetingService
-path: C41F7BF918EAC9A71685DE172426C3BC.gwt.rpc

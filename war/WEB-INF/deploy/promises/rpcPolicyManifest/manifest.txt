@@ -1,3 +1,0 @@
-# Module promises
-# RPC service class, partial path of RPC policy file
-org.client.GreetingService, C41F7BF918EAC9A71685DE172426C3BC.gwt.rpc
