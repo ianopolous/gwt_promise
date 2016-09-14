@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/** Emulation of CompletableFuture using native Promises
+/** Emulation of CompletableFuture
  *
  */
 public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
@@ -28,16 +28,24 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
   private final List<CompletableFuture> errorFutures = new ArrayList<>();
   private T value;
   private Throwable reason;
-  private boolean isDone = false;
+  private boolean isDone;
 
-  public CompletableFuture() {}
+  private CompletableFuture(T value, Throwable err, boolean isDone) {
+    this.value = value;
+    this.reason = err;
+    this.isDone = isDone;
+  }
+
+  public CompletableFuture() {
+    this(null, null, false);
+  }
 
   private CompletableFuture(T value) {
-    this.value = value;
+    this(value, null, true);
   }
 
   private CompletableFuture(Throwable err) {
-    this.reason = err;
+    this(null, err, true);
   }
 
   @Override
